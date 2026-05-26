@@ -11,6 +11,7 @@ import {
   renderClaimWorkpad,
   requireProject,
   type ClaimRequest,
+  type CloseRequest,
   type ConflictMatch,
   type DiscoverRequest,
   type HandoffRequest,
@@ -66,6 +67,11 @@ async function handleRequest(req: http.IncomingMessage, res: http.ServerResponse
   const handoffMatch = url.pathname.match(/^\/v1\/issues\/([^/]+)\/handoff$/);
   if (req.method === "POST" && handoffMatch) {
     return writeJson(res, 200, await handoff({ ...(await readJson<Omit<HandoffRequest, "issueId">>(req)), issueId: decodeURIComponent(handoffMatch[1] ?? "") }));
+  }
+
+  const closeMatch = url.pathname.match(/^\/v1\/issues\/([^/]+)\/close$/);
+  if (req.method === "POST" && closeMatch) {
+    return writeJson(res, 200, await close({ ...(await readJson<Omit<CloseRequest, "issueId">>(req)), issueId: decodeURIComponent(closeMatch[1] ?? "") }));
   }
 
   const contextMatch = url.pathname.match(/^\/v1\/issues\/([^/]+)\/context$/);
@@ -191,6 +197,26 @@ async function handoff(request: HandoffRequest): Promise<Record<string, unknown>
   const team = await linear.resolveTeam(project.linearTeam);
   const review = await linear.resolveState(team, projectStates(project).review);
   const updated = await linear.updateIssue({ id: issue.id, stateId: review.id });
+  return { issue: updated };
+}
+
+async function close(request: CloseRequest): Promise<Record<string, unknown>> {
+  const config = loadConfig();
+  const { project } = selectProject(config, request.project);
+  const states = projectStates(project);
+  const requestedState = request.state ?? states.terminal[0];
+  if (!requestedState) {
+    throw new PuterError(400, "missing_terminal_state", "Project does not define a terminal close state.");
+  }
+
+  const linear = new LinearClient();
+  const issue = await linear.getIssue(request.issueId);
+  const team = await linear.resolveTeam(project.linearTeam);
+  const closeState = await linear.resolveState(team, requestedState);
+  const updated = await linear.updateIssue({ id: issue.id, stateId: closeState.id });
+  if (request.reason?.trim()) {
+    await linear.createComment(issue.id, `Puter close reason:\n\n${request.reason.trim()}`);
+  }
   return { issue: updated };
 }
 

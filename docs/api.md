@@ -90,6 +90,23 @@ POST /v1/issues/PUT-123/handoff
 
 Updates the workpad and moves the issue to the configured review state.
 
+## Close
+
+```http
+POST /v1/issues/PUT-123/close
+```
+
+```json
+{
+  "project": "puter",
+  "state": "Done",
+  "reason": "Validation passed and artifacts are linked."
+}
+```
+
+Moves the issue to a terminal workflow state. If `state` is omitted, Puter uses the first configured
+terminal state, which defaults to `Done`.
+
 ## Context
 
 ```http

@@ -100,6 +100,32 @@ async function main(): Promise<void> {
       );
     }
 
+    case "close": {
+      if (!first) {
+        usage("puter close <issue-id> [--state <state>] [--reason <text>]");
+      }
+      return print(
+        await post(`/v1/issues/${encodeURIComponent(first)}/close`, {
+          project: stringArg(args, "project"),
+          state: stringArg(args, "state"),
+          reason: stringArg(args, "reason")
+        })
+      );
+    }
+
+    case "cancel": {
+      if (!first) {
+        usage("puter cancel <issue-id> [--reason <text>]");
+      }
+      return print(
+        await post(`/v1/issues/${encodeURIComponent(first)}/close`, {
+          project: stringArg(args, "project"),
+          state: stringArg(args, "state") ?? "Canceled",
+          reason: stringArg(args, "reason")
+        })
+      );
+    }
+
     case "context": {
       if (!first) {
         usage("puter context <issue-id>");
@@ -151,6 +177,8 @@ function usage(message?: string): never {
   puter discover <parent-issue-id> <title> [--area <area>]
   puter conflict <issue-id> --with <issue-id> --reason <reason>
   puter handoff <issue-id> [--pr <url>] [--validation <text>]
+  puter close <issue-id> [--state <state>] [--reason <text>]
+  puter cancel <issue-id> [--reason <text>]
   puter context <issue-id>
   puter refresh <project>
   puter doctor

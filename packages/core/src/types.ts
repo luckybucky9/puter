@@ -82,6 +82,13 @@ export interface HandoffRequest {
   notes?: string;
 }
 
+export interface CloseRequest {
+  issueId: string;
+  project?: string;
+  state?: string;
+  reason?: string;
+}
+
 export interface PuterIssue {
   id: string;
   identifier: string;

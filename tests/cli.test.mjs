@@ -8,6 +8,13 @@ import test from "node:test";
 const root = path.resolve(import.meta.dirname, "..");
 const cli = path.join(root, "apps", "cli", "dist", "index.js");
 
+test("usage includes terminal state commands", () => {
+  const result = spawnSync("node", [cli], { cwd: root, encoding: "utf8" });
+  const output = `${result.stdout}${result.stderr}`;
+  assert.match(output, /puter close <issue-id>/);
+  assert.match(output, /puter cancel <issue-id>/);
+});
+
 test("install shell emits codex and claude wrappers", () => {
   const output = execFileSync("node", [cli, "install", "shell"], { cwd: root, encoding: "utf8" });
   assert.match(output, /codex\(\)/);

@@ -44,6 +44,13 @@ The handoff must include:
 - validation run
 - known limitations or blockers
 
+When the work is accepted or a cleanup task is finished, close it through Puter:
+
+```bash
+puter close PUT-123 --reason "Validation passed"
+puter cancel PUT-124 --reason "Superseded by PUT-123"
+```
+
 ## Manual Fallback
 
 Use only when Puter itself is broken or unreachable:

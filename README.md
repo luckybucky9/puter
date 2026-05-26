@@ -39,6 +39,7 @@ CLI examples:
 pnpm --filter @lucky9/puter-cli puter new "Fix onboarding bug" --project puter --area apps/api --ready
 pnpm --filter @lucky9/puter-cli puter claim PUT-123 --surface codex --branch agent/PUT-123-onboarding --area apps/api
 pnpm --filter @lucky9/puter-cli puter handoff PUT-123 --pr https://github.com/luckybucky9/puter/pull/12 --validation "pnpm test passed"
+pnpm --filter @lucky9/puter-cli puter close PUT-123 --reason "Validation passed"
 ```
 
 Local shell hooks:
@@ -57,6 +58,7 @@ POST /v1/issues/:id/claim
 POST /v1/issues/:id/discover
 POST /v1/issues/:id/conflict
 POST /v1/issues/:id/handoff
+POST /v1/issues/:id/close
 GET  /v1/issues/:id/context
 POST /v1/projects/:project/refresh
 ```
