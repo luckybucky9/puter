@@ -1,0 +1,11 @@
+{
+  "files": [],
+  "references": [
+    { "path": "packages/core" },
+    { "path": "packages/linear" },
+    { "path": "packages/github" },
+    { "path": "packages/symphony" },
+    { "path": "apps/api" },
+    { "path": "apps/cli" }
+  ]
+}

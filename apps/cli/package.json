@@ -1,0 +1,18 @@
+{
+  "name": "@lucky9/puter-cli",
+  "version": "0.1.0",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "bin": {
+    "puter": "./dist/index.js"
+  },
+  "dependencies": {
+    "@lucky9/puter-core": "workspace:*"
+  },
+  "scripts": {
+    "build": "tsc -b",
+    "puter": "node dist/index.js",
+    "typecheck": "tsc -b --pretty false"
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "name": "puter",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Work ingress and coordination layer for agent-driven development.",
+  "license": "Apache-2.0",
+  "type": "module",
+  "packageManager": "pnpm@9.15.0",
+  "scripts": {
+    "build": "tsc -b",
+    "clean": "git clean -fdX -- apps/*/dist packages/*/dist",
+    "dev": "pnpm --filter @lucky9/puter-api dev",
+    "lint": "node scripts/lint.mjs",
+    "test": "pnpm build && node --test tests/*.test.mjs",
+    "typecheck": "tsc -b --pretty false",
+    "secret:scan": "node scripts/secret-scan.mjs"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "typescript": "^5.8.0"
+  }
+}

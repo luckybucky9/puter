@@ -1,0 +1,11 @@
+{{- if not .Values.config.existingConfigMap }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "puter.fullname" . }}-config
+  labels:
+    {{- include "puter.labels" . | nindent 4 }}
+data:
+  puter.config.json: |
+{{ .Values.config.puterConfigJson | indent 4 }}
+{{- end }}

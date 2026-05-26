@@ -1,0 +1,30 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+coverage/
+*.tsbuildinfo
+
+# Local runtime
+.env
+.env.*
+!.env.example
+puter.config.json
+data/
+logs/
+
+# Terraform/local deploy state
+**/.terraform/
+**/.terraform.lock.hcl
+**/terraform.tfstate
+**/terraform.tfstate.*
+**/*.tfvars
+**/*.tfvars.json
+
+# OS/editor
+.DS_Store
+.idea/
+.vscode/
+*.swp
+*.swo

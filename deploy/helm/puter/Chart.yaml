@@ -1,0 +1,6 @@
+apiVersion: v2
+name: puter
+description: Work ingress and coordination layer for agent-driven development
+type: application
+version: 0.1.0
+appVersion: "0.1.0"
