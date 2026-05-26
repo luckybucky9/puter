@@ -7,7 +7,7 @@ variable "namespace" {
 variable "image_repository" {
   description = "Container image repository."
   type        = string
-  default     = "ghcr.io/lucky9-labs/puter"
+  default     = "ghcr.io/luckybucky9/puter"
 }
 
 variable "image_tag" {

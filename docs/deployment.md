@@ -2,6 +2,10 @@
 
 Puter V0 is stateless. It can run as a local process, a single container, or a Kubernetes Deployment.
 
+This open-source repo contains reusable deployment examples only. Account-specific deployment state,
+Terraform backends, `*.tfvars`, cloud apply workflows, and production runtime history belong in a
+private infrastructure repo. See [deployment-boundary.md](deployment-boundary.md).
+
 ## Container
 
 ```bash
@@ -17,7 +21,7 @@ Use the Helm chart:
 helm upgrade --install puter deploy/helm/puter \
   --namespace puter \
   --create-namespace \
-  --set image.repository=ghcr.io/lucky9-labs/puter \
+  --set image.repository=ghcr.io/luckybucky9/puter \
   --set image.tag=latest
 ```
 
@@ -51,4 +55,6 @@ Main branch CI should:
 5. build container
 6. lint Helm chart
 7. validate Terraform examples
-8. publish image to GHCR on `main`
+8. publish versioned image artifacts
+
+Public CI should not directly deploy Lucky9's hosted Puter instance.

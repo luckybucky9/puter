@@ -3,7 +3,7 @@
     "puter": {
       "linearTeam": "PUT",
       "linearProject": "Puter",
-      "repo": "Lucky9-Labs/puter",
+      "repo": "luckybucky9/puter",
       "symphonyRefreshUrl": "http://127.0.0.1:4001/api/v1/refresh",
       "states": {
         "backlog": "Backlog",
@@ -17,7 +17,7 @@
     "puter-v0-test": {
       "linearTeam": "PUT",
       "linearProject": "Puter V0 Test",
-      "repo": "Lucky9-Labs/puter-v0-test"
+      "repo": "luckybucky9/puter-v0-test"
     }
   }
 }

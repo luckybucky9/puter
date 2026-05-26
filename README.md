@@ -38,7 +38,7 @@ CLI examples:
 ```bash
 pnpm --filter @lucky9/puter-cli puter new "Fix onboarding bug" --project puter --area apps/api --ready
 pnpm --filter @lucky9/puter-cli puter claim PUT-123 --surface codex --branch agent/PUT-123-onboarding --area apps/api
-pnpm --filter @lucky9/puter-cli puter handoff PUT-123 --pr https://github.com/Lucky9-Labs/puter/pull/12 --validation "pnpm test passed"
+pnpm --filter @lucky9/puter-cli puter handoff PUT-123 --pr https://github.com/luckybucky9/puter/pull/12 --validation "pnpm test passed"
 ```
 
 Local shell hooks:
@@ -84,6 +84,10 @@ After that, `codex` and `claude` shell calls can route through `puter exec`, whi
 - AWS examples: [deploy/terraform](deploy/terraform)
 
 See [docs/deployment.md](docs/deployment.md).
+
+Lucky9's hosted Puter deployment is intentionally separate from this open-source repo. This repo
+contains the product, generic deploy examples, and public CI; account-specific cloud CI/CD belongs in
+a private deployment repo. See [docs/deployment-boundary.md](docs/deployment-boundary.md).
 
 ## Agent Protocol
 

@@ -35,7 +35,7 @@ wrapper. Use `--require-claim` when a repo should never start a wrapped session 
 Before final response:
 
 ```bash
-puter handoff PUT-123 --pr https://github.com/Lucky9-Labs/puter/pull/12 --validation "pnpm test passed"
+puter handoff PUT-123 --pr https://github.com/luckybucky9/puter/pull/12 --validation "pnpm test passed"
 ```
 
 The handoff must include:

@@ -2,6 +2,9 @@
 
 Puter deployment infrastructure should stay example-driven and portable.
 
+Lucky9-specific cloud state is intentionally not stored in this open-source repo. The directories
+below are reusable examples; production deployment roots should live in a private infrastructure repo.
+
 ## V0 Targets
 
 1. **Local**: Docker Compose with env-file secrets.

@@ -28,7 +28,7 @@ POST /v1/intake
   "source": "cli",
   "actor": "lakshya",
   "project": "puter",
-  "repo": "Lucky9-Labs/puter",
+  "repo": "luckybucky9/puter",
   "areas": ["apps/api"],
   "links": ["https://example.com/context"],
   "ready": false,
@@ -82,7 +82,7 @@ POST /v1/issues/PUT-123/handoff
 
 ```json
 {
-  "pr": "https://github.com/Lucky9-Labs/puter/pull/12",
+  "pr": "https://github.com/luckybucky9/puter/pull/12",
   "validation": "pnpm test passed",
   "notes": "No known limitations"
 }

@@ -17,10 +17,13 @@ CI/CD should prove Puter is safe to run before publishing an image.
 
 - Build image.
 - Push to GHCR:
-  - `ghcr.io/lucky9-labs/puter:<sha>`
-  - `ghcr.io/lucky9-labs/puter:latest`
+  - `ghcr.io/luckybucky9/puter:<sha>`
+  - `ghcr.io/luckybucky9/puter:latest`
 - Package Helm chart in a future release workflow.
-- Deploy staging in a future environment workflow.
+- Do not deploy Lucky9 cloud environments from this public repo.
+
+Lucky9 cloud deploys are driven from a private deployment repo that consumes published images from
+this repo.
 
 ## Release Tags
 

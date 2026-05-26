@@ -40,9 +40,9 @@ Configure a project:
 ```json
 {
   "projects": {
-    "azalea": {
+    "puter": {
       "linearTeam": "LUC",
-      "linearProject": "Azalea",
+      "linearProject": "Puter V0 Local Control Plane",
       "symphonyRefreshUrl": "http://127.0.0.1:4001/api/v1/refresh"
     }
   }
@@ -52,7 +52,7 @@ Configure a project:
 Then:
 
 ```bash
-puter refresh azalea
+puter refresh puter
 ```
 
 If Symphony is offline, Puter should preserve the Linear issue and surface the refresh error without deleting the work.

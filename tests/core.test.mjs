@@ -23,8 +23,8 @@ test("workpad renders and parses durable claim metadata", () => {
 });
 
 test("GitHub PR URLs are parsed for handoff validation", () => {
-  assert.deepEqual(parseGitHubPullRequestUrl("https://github.com/Lucky9-Labs/puter/pull/12"), {
-    owner: "Lucky9-Labs",
+  assert.deepEqual(parseGitHubPullRequestUrl("https://github.com/luckybucky9/puter/pull/12"), {
+    owner: "luckybucky9",
     repo: "puter",
     number: 12
   });
