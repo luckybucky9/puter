@@ -21,6 +21,12 @@ test("install bin emits a local puter shim", () => {
   assert.match(output, /index\.js' "\$@"/);
 });
 
+test("install launchd accepts --env without colliding with node flags", () => {
+  const output = execFileSync("node", [cli, "install", "launchd", "--env", "/tmp/puter.env"], { cwd: root, encoding: "utf8" });
+  assert.match(output, /\/tmp\/puter\.env/);
+  assert.match(output, /com\.lucky9\.puter/);
+});
+
 test("exec runs a child command without a claim when no issue is inferred", () => {
   const output = execFileSync("node", [cli, "exec", "--surface", "terminal", "--", "node", "-e", "console.log(process.env.PUTER_CLAIMED)"], {
     cwd: root,

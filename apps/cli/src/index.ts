@@ -157,7 +157,7 @@ function usage(message?: string): never {
   puter exec [--issue <issue-id> | --title <title> | --auto-create] --surface <surface> -- <command>
   puter install bin [--write] [--dir <path>]
   puter install shell [--auto-create] [--require-claim]
-  puter install launchd [--write] [--command <command>] [--env-file <path>]
+  puter install launchd [--write] [--command <command>] [--env <path>]
   puter init-repo [--path <repo>] [--project <project>]
 `);
   process.exit(message ? 1 : 0);

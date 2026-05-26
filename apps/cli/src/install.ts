@@ -61,7 +61,7 @@ puter-terminal() {
 function installLaunchd(args: Args): void {
   const label = stringArg(args, "label") ?? "com.lucky9.puter";
   const plistPath = path.join(os.homedir(), "Library", "LaunchAgents", `${label}.plist`);
-  const envFile = stringArg(args, "env-file") ?? path.join(os.homedir(), ".config", "puter", "puter.env");
+  const envFile = stringArg(args, "env") ?? path.join(os.homedir(), ".config", "puter", "puter.env");
   const command = stringArg(args, "command") ?? defaultDaemonCommand(envFile);
   const configPath = process.env.PUTER_CONFIG ?? path.join(os.homedir(), ".config", "puter", "config.json");
   const logRoot = path.join(os.homedir(), "Library", "Logs", "puter");

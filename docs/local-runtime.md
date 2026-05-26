@@ -59,7 +59,7 @@ chmod 600 ~/.config/puter/puter.env
 Install the local daemon plist:
 
 ```bash
-PUTER_CONFIG="$HOME/.config/puter/config.json" puter install launchd --write --env-file "$HOME/.config/puter/puter.env"
+PUTER_CONFIG="$HOME/.config/puter/config.json" puter install launchd --write --env "$HOME/.config/puter/puter.env"
 launchctl bootstrap "gui/$UID" "$HOME/Library/LaunchAgents/com.lucky9.puter.plist"
 launchctl kickstart -k "gui/$UID/com.lucky9.puter"
 ```
