@@ -14,6 +14,15 @@ Agents are execution surfaces. Puter is the coordination surface.
 3. If the claim returns `409`, do not edit. Follow the returned integration issue.
 4. If Puter is unavailable, use the manual fallback workpad described in `AGENTS.md`.
 
+For local tools, prefer the wrapped entrypoint:
+
+```bash
+puter exec --surface codex --issue PUT-123 --project puter --area apps/api -- codex
+```
+
+Shell hooks from `puter install shell` make plain `codex` and `claude` calls route through this
+wrapper. Use `--require-claim` when a repo should never start a wrapped session without Linear work.
+
 ## During Work
 
 - Keep scope tied to the Linear issue.

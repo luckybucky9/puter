@@ -41,6 +41,14 @@ pnpm --filter @lucky9/puter-cli puter claim PUT-123 --surface codex --branch age
 pnpm --filter @lucky9/puter-cli puter handoff PUT-123 --pr https://github.com/Lucky9-Labs/puter/pull/12 --validation "pnpm test passed"
 ```
 
+Local shell hooks:
+
+```bash
+eval "$(puter install shell)"
+puter exec --surface codex --issue PUT-123 --project puter -- codex
+puter doctor
+```
+
 ## API
 
 ```http
@@ -54,6 +62,20 @@ POST /v1/projects/:project/refresh
 ```
 
 See [docs/api.md](docs/api.md).
+
+## Install Path
+
+The repeatable local path is:
+
+```txt
+node apps/cli/dist/index.js install bin --write
+puter install launchd --write
+launchctl bootstrap gui/$UID ~/Library/LaunchAgents/com.lucky9.puter.plist
+eval "$(puter install shell)"
+puter init-repo --project <project>
+```
+
+After that, `codex` and `claude` shell calls can route through `puter exec`, which claims or creates Linear work before launching the underlying tool.
 
 ## Deployment
 

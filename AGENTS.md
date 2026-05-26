@@ -8,7 +8,7 @@ Before editing:
 2. Claim it through Puter when Puter is available:
 
    ```bash
-   puter claim PUT-123 --surface codex --branch agent/PUT-123-short-title --area <area>
+   puter claim PUT-123 --project puter --surface codex --branch agent/PUT-123-short-title --area <area>
    ```
 
 3. If Puter is broken or unavailable, use manual fallback by creating/updating a Linear comment with:
@@ -47,3 +47,27 @@ Core areas:
 - `deploy/terraform`
 - `docs`
 - `ci`
+
+<!-- puter:agent-protocol:start -->
+## Puter Coordination
+
+Before editing, claim the Linear issue through Puter:
+
+```bash
+puter claim <issue-id> --project puter --surface <codex|claude|terminal|github|ec2> --area <path>
+```
+
+For wrapped local sessions, start the tool through Puter:
+
+```bash
+puter exec --surface codex --issue <issue-id> --project puter -- codex
+```
+
+If Puter returns a conflict, do not edit. Follow the returned integration issue.
+
+Before handoff, record the result:
+
+```bash
+puter handoff <issue-id> --pr <url> --validation "<command passed>"
+```
+<!-- puter:agent-protocol:end -->

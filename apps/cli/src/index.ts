@@ -1,10 +1,11 @@
 #!/usr/bin/env node
 import { PuterError } from "@lucky9/puter-core";
-
-type Args = Record<string, string | boolean | string[]>;
-
-const apiUrl = process.env.PUTER_API_URL ?? "http://127.0.0.1:8787";
-const apiToken = process.env.PUTER_API_TOKEN;
+import { booleanArg, listArg, numberArg, parseArgs, required, splitCommand, stringArg } from "./args.js";
+import { runDoctor } from "./doctor.js";
+import { runExec } from "./exec.js";
+import { get, post } from "./http.js";
+import { runInitRepo } from "./init-repo.js";
+import { runInstall } from "./install.js";
 
 main().catch((error) => {
   const message = error instanceof Error ? error.message : String(error);
@@ -113,6 +114,20 @@ async function main(): Promise<void> {
       return print(await post(`/v1/projects/${encodeURIComponent(first)}/refresh`, {}));
     }
 
+    case "doctor":
+      return runDoctor();
+
+    case "exec": {
+      const split = splitCommand([first, ...rest].filter((value): value is string => Boolean(value)));
+      return runExec(split.args, split.command);
+    }
+
+    case "install":
+      return runInstall(first, args);
+
+    case "init-repo":
+      return runInitRepo(parseArgs([first, ...rest].filter((value): value is string => Boolean(value))));
+
     case "help":
     case undefined:
       return usage();
@@ -120,94 +135,6 @@ async function main(): Promise<void> {
     default:
       throw new PuterError(1, "unknown_command", `Unknown command: ${command}`);
   }
-}
-
-async function get(path: string): Promise<unknown> {
-  return request("GET", path);
-}
-
-async function post(path: string, body: unknown): Promise<unknown> {
-  return request("POST", path, body);
-}
-
-async function request(method: string, path: string, body?: unknown): Promise<unknown> {
-  const headers: Record<string, string> = { "content-type": "application/json" };
-  if (apiToken) {
-    headers.authorization = `Bearer ${apiToken}`;
-  }
-
-  const response = await fetch(`${apiUrl}${path}`, {
-    method,
-    headers,
-    body: body === undefined ? undefined : JSON.stringify(body)
-  });
-  const text = await response.text();
-  const parsed = text ? JSON.parse(text) : {};
-  if (!response.ok) {
-    const error = parsed as { error?: { code?: string; message?: string; details?: unknown } };
-    throw new PuterError(response.status, error.error?.code ?? "request_failed", error.error?.message ?? `HTTP ${response.status}`, error.error?.details);
-  }
-  return parsed;
-}
-
-function parseArgs(values: string[]): Args {
-  const out: Args = {};
-  for (let i = 0; i < values.length; i += 1) {
-    const token = values[i];
-    if (!token?.startsWith("--")) {
-      continue;
-    }
-    const key = token.slice(2);
-    const next = values[i + 1];
-    const value = !next || next.startsWith("--") ? true : next;
-    if (value !== true) {
-      i += 1;
-    }
-    if (out[key] === undefined) {
-      out[key] = value;
-    } else if (Array.isArray(out[key])) {
-      (out[key] as string[]).push(String(value));
-    } else {
-      out[key] = [String(out[key]), String(value)];
-    }
-  }
-  return out;
-}
-
-function stringArg(args: Args, name: string): string | undefined {
-  const value = args[name];
-  if (Array.isArray(value)) {
-    return value[0];
-  }
-  return typeof value === "string" ? value : undefined;
-}
-
-function listArg(args: Args, name: string): string[] {
-  const value = args[name];
-  if (Array.isArray(value)) {
-    return value.flatMap((item) => item.split(",")).map((item) => item.trim()).filter(Boolean);
-  }
-  if (typeof value === "string") {
-    return value.split(",").map((item) => item.trim()).filter(Boolean);
-  }
-  return [];
-}
-
-function numberArg(args: Args, name: string): number | undefined {
-  const value = stringArg(args, name);
-  if (!value) {
-    return undefined;
-  }
-  const parsed = Number(value);
-  return Number.isFinite(parsed) ? parsed : undefined;
-}
-
-function required(args: Args, name: string): string {
-  const value = stringArg(args, name);
-  if (!value) {
-    throw new PuterError(1, "missing_arg", `Missing --${name}`);
-  }
-  return value;
 }
 
 function print(value: unknown): void {
@@ -226,6 +153,12 @@ function usage(message?: string): never {
   puter handoff <issue-id> [--pr <url>] [--validation <text>]
   puter context <issue-id>
   puter refresh <project>
+  puter doctor
+  puter exec [--issue <issue-id> | --title <title> | --auto-create] --surface <surface> -- <command>
+  puter install bin [--write] [--dir <path>]
+  puter install shell [--auto-create] [--require-claim]
+  puter install launchd [--write] [--command <command>] [--env-file <path>]
+  puter init-repo [--path <repo>] [--project <project>]
 `);
   process.exit(message ? 1 : 0);
 }
