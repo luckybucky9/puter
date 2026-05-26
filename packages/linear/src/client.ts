@@ -26,6 +26,11 @@ export interface LinearProject {
   teams?: { nodes: LinearTeam[] };
 }
 
+interface LinearPageInfo {
+  hasNextPage: boolean;
+  endCursor?: string | null;
+}
+
 export interface LinearIssueNode extends PuterIssue {
   comments?: { nodes: LinearComment[] };
 }
@@ -119,32 +124,43 @@ export class LinearClient {
       return undefined;
     }
 
-    const data = await this.request<{ projects: { nodes: LinearProject[] } }>(`
-      query PuterProjects {
-        projects(first: 250, includeArchived: false) {
-          nodes {
-            id
-            name
-            slugId
-            teams { nodes { id key name } }
-          }
-        }
-      }
-    `);
-
     const wantedName = project.linearProject?.toLowerCase();
     const wantedSlug = project.linearProjectSlug?.toLowerCase();
-    const match = data.projects.nodes.find((node) => {
-      return (
-        (wantedSlug && node.slugId?.toLowerCase() === wantedSlug) ||
-        (wantedName && node.name.toLowerCase() === wantedName)
-      );
-    });
+    let cursor: string | undefined;
 
-    if (!match) {
-      throw new PuterError(404, "linear_project_not_found", "Configured Linear project was not found.");
-    }
-    return match;
+    do {
+      const data = await this.request<{ projects: { nodes: LinearProject[]; pageInfo: LinearPageInfo } }>(
+        `
+        query PuterProjects($after: String) {
+          projects(first: 50, after: $after, includeArchived: false) {
+            nodes {
+              id
+              name
+              slugId
+              teams { nodes { id key name } }
+            }
+            pageInfo { hasNextPage endCursor }
+          }
+        }
+      `,
+        { after: cursor }
+      );
+
+      const match = data.projects.nodes.find((node) => {
+        return (
+          (wantedSlug && node.slugId?.toLowerCase() === wantedSlug) ||
+          (wantedName && node.name.toLowerCase() === wantedName)
+        );
+      });
+
+      if (match) {
+        return match;
+      }
+
+      cursor = data.projects.pageInfo.hasNextPage ? data.projects.pageInfo.endCursor ?? undefined : undefined;
+    } while (cursor);
+
+    throw new PuterError(404, "linear_project_not_found", "Configured Linear project was not found.");
   }
 
   async resolveState(team: LinearTeam, stateName: string): Promise<LinearWorkflowState> {
