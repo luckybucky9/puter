@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { execFileSync } from "node:child_process";
+import { execFileSync, spawnSync } from "node:child_process";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
@@ -25,6 +25,23 @@ test("install launchd accepts --env without colliding with node flags", () => {
   const output = execFileSync("node", [cli, "install", "launchd", "--env", "/tmp/puter.env"], { cwd: root, encoding: "utf8" });
   assert.match(output, /\/tmp\/puter\.env/);
   assert.match(output, /com\.lucky9\.puter/);
+});
+
+test("doctor checks daemon env files for Linear auth", () => {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), "puter-env-"));
+  const envFile = path.join(dir, "puter.env");
+  fs.writeFileSync(envFile, "LINEAR_API_KEY=dummy-linear-test\n");
+  const result = spawnSync("node", [cli, "doctor"], {
+    cwd: root,
+    encoding: "utf8",
+    env: {
+      ...process.env,
+      PUTER_ENV: envFile,
+      PUTER_API_URL: "http://127.0.0.1:1"
+    }
+  });
+  const output = `${result.stdout}${result.stderr}`;
+  assert.match(output, /linear token\s+present in/);
 });
 
 test("exec runs a child command without a claim when no issue is inferred", () => {

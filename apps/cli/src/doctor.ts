@@ -1,5 +1,7 @@
 import { execFileSync } from "node:child_process";
 import fs from "node:fs";
+import os from "node:os";
+import path from "node:path";
 import { apiUrl, request } from "./http.js";
 import { readLocalContext } from "./local.js";
 
@@ -12,6 +14,8 @@ interface Check {
 export async function runDoctor(): Promise<void> {
   const checks: Check[] = [];
   const context = readLocalContext();
+  const daemonEnvPath = process.env.PUTER_ENV ?? path.join(os.homedir(), ".config", "puter", "puter.env");
+  const daemonEnv = readEnvFile(daemonEnvPath);
 
   checks.push({
     name: "config",
@@ -26,9 +30,19 @@ export async function runDoctor(): Promise<void> {
   });
 
   checks.push({
+    name: "daemon env",
+    ok: fs.existsSync(daemonEnvPath),
+    detail: fs.existsSync(daemonEnvPath) ? daemonEnvPath : `missing ${daemonEnvPath}`
+  });
+
+  checks.push({
     name: "linear token",
-    ok: Boolean(process.env.LINEAR_API_KEY),
-    detail: process.env.LINEAR_API_KEY ? "present" : "missing LINEAR_API_KEY for the API daemon"
+    ok: hasRuntimeValue(process.env.LINEAR_API_KEY) || hasRuntimeValue(daemonEnv.LINEAR_API_KEY),
+    detail: hasRuntimeValue(process.env.LINEAR_API_KEY)
+      ? "present in shell"
+      : hasRuntimeValue(daemonEnv.LINEAR_API_KEY)
+        ? `present in ${daemonEnvPath}`
+        : "missing LINEAR_API_KEY for the API daemon"
   });
 
   checks.push(commandCheck("git", ["--version"]));
@@ -92,6 +106,31 @@ function isHttpUrl(value: string): boolean {
   } catch {
     return false;
   }
+}
+
+function readEnvFile(file: string): Record<string, string> {
+  if (!fs.existsSync(file)) {
+    return {};
+  }
+  const values: Record<string, string> = {};
+  for (const line of fs.readFileSync(file, "utf8").split("\n")) {
+    const trimmed = line.trim();
+    if (!trimmed || trimmed.startsWith("#")) {
+      continue;
+    }
+    const match = trimmed.match(/^([A-Za-z_][A-Za-z0-9_]*)=(.*)$/);
+    if (!match) {
+      continue;
+    }
+    const key = match[1]!;
+    const value = match[2]!.replace(/^['"]|['"]$/g, "").trim();
+    values[key] = value;
+  }
+  return values;
+}
+
+function hasRuntimeValue(value: string | undefined): boolean {
+  return Boolean(value && value.trim() && !value.includes("replace-with"));
 }
 
 export function configExists(pathname: string): boolean {
