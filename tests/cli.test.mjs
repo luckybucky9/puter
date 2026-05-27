@@ -13,6 +13,7 @@ test("usage includes terminal state commands", () => {
   const output = `${result.stdout}${result.stderr}`;
   assert.match(output, /puter close <issue-id>/);
   assert.match(output, /puter cancel <issue-id>/);
+  assert.match(output, /puter report <issue-id>/);
 });
 
 test("install shell emits codex and claude wrappers", () => {

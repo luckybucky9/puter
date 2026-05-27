@@ -100,6 +100,22 @@ async function main(): Promise<void> {
       );
     }
 
+    case "report": {
+      if (!first) {
+        usage("puter report <issue-id> --status <running|failed|blocked|note>");
+      }
+      return print(
+        await post(`/v1/issues/${encodeURIComponent(first)}/report`, {
+          status: stringArg(args, "status") ?? "note",
+          validation: stringArg(args, "validation"),
+          notes: stringArg(args, "notes"),
+          command: stringArg(args, "command"),
+          exitCode: numberArg(args, "exit-code"),
+          artifact: stringArg(args, "artifact")
+        })
+      );
+    }
+
     case "close": {
       if (!first) {
         usage("puter close <issue-id> [--state <state>] [--reason <text>]");
@@ -177,6 +193,7 @@ function usage(message?: string): never {
   puter discover <parent-issue-id> <title> [--area <area>]
   puter conflict <issue-id> --with <issue-id> --reason <reason>
   puter handoff <issue-id> [--pr <url>] [--validation <text>]
+  puter report <issue-id> --status <running|failed|blocked|note> [--validation <text>]
   puter close <issue-id> [--state <state>] [--reason <text>]
   puter cancel <issue-id> [--reason <text>]
   puter context <issue-id>

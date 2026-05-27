@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { overlappingAreas, parseWorkpad, renderClaimWorkpad } from "../packages/core/dist/index.js";
+import { appendReportToWorkpad, overlappingAreas, parseWorkpad, renderClaimWorkpad } from "../packages/core/dist/index.js";
 import { parseGitHubPullRequestUrl } from "../packages/github/dist/index.js";
 
 test("area overlap treats parent paths as conflicts", () => {
@@ -20,6 +20,27 @@ test("workpad renders and parses durable claim metadata", () => {
   assert.equal(parsed?.issueId, "PUT-1");
   assert.equal(parsed?.surface, "codex");
   assert.deepEqual(parsed?.areas, ["apps/api"]);
+});
+
+test("workpad report appends failure context without changing parsed claim", () => {
+  const body = renderClaimWorkpad({
+    issueId: "PUT-2",
+    surface: "github",
+    owner: "actions",
+    areas: ["ci"]
+  });
+  const updated = appendReportToWorkpad(body, {
+    issueId: "PUT-2",
+    status: "failed",
+    exitCode: 1,
+    command: "pnpm test",
+    validation: "Command exited 1: pnpm test"
+  });
+
+  assert.match(updated, /### Report/);
+  assert.match(updated, /- Status: failed/);
+  assert.match(updated, /- Exit Code: 1/);
+  assert.equal(parseWorkpad(updated)?.surface, "github");
 });
 
 test("GitHub PR URLs are parsed for handoff validation", () => {

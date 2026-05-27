@@ -5,12 +5,13 @@ export type WorkSource =
   | "claude"
   | "ec2"
   | "github"
+  | "symphony"
   | "slack"
   | "voice"
   | "terminal"
   | "other";
 
-export type WorkSurface = "codex" | "claude" | "ec2" | "github" | "terminal" | "other";
+export type WorkSurface = "codex" | "claude" | "ec2" | "github" | "symphony" | "terminal" | "other";
 
 export interface ProjectStates {
   backlog: string;
@@ -80,6 +81,18 @@ export interface HandoffRequest {
   artifact?: string;
   validation?: string;
   notes?: string;
+}
+
+export type ExecutionReportStatus = "running" | "failed" | "blocked" | "note";
+
+export interface ExecutionReportRequest {
+  issueId: string;
+  status: ExecutionReportStatus;
+  validation?: string;
+  notes?: string;
+  command?: string;
+  exitCode?: number;
+  artifact?: string;
 }
 
 export interface CloseRequest {

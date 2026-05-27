@@ -1,6 +1,6 @@
 import { randomUUID } from "node:crypto";
 import { normalizeAreas } from "./areas.js";
-import type { ClaimRequest, HandoffRequest, Workpad } from "./types.js";
+import type { ClaimRequest, ExecutionReportRequest, HandoffRequest, Workpad } from "./types.js";
 
 const HEADER = "## Puter Workpad";
 const MARKER_RE = /<!-- puter:workpad v1 issue=(?<issue>[^ ]+)(?: claim=(?<claim>[^ ]+))? -->/;
@@ -61,6 +61,28 @@ export function appendHandoffToWorkpad(existing: string, handoff: HandoffRequest
   return `${lines.join("\n")}\n`;
 }
 
+export function appendReportToWorkpad(existing: string, report: ExecutionReportRequest): string {
+  const lines = [existing.trimEnd(), "", "### Report", `- Status: ${report.status}`];
+
+  if (typeof report.exitCode === "number") {
+    lines.push(`- Exit Code: ${report.exitCode}`);
+  }
+  if (report.command) {
+    lines.push(`- Command: ${singleLine(report.command)}`);
+  }
+  if (report.validation) {
+    lines.push(`- Validation: ${singleLine(report.validation)}`);
+  }
+  if (report.artifact) {
+    lines.push(`- Artifact: ${singleLine(report.artifact)}`);
+  }
+  if (report.notes) {
+    lines.push(`- Notes: ${singleLine(report.notes)}`);
+  }
+
+  return `${lines.join("\n")}\n`;
+}
+
 export function parseWorkpad(body: string): Workpad | null {
   if (!isPuterWorkpad(body)) {
     return null;
@@ -111,4 +133,8 @@ function sectionList(body: string, heading: string): string[] {
 
 function escapeRegExp(value: string): string {
   return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+function singleLine(value: string): string {
+  return value.replace(/\s+/g, " ").trim();
 }

@@ -34,6 +34,11 @@ PUTER_API_TOKEN
 SYMPHONY_REFRESH_TOKEN
 ```
 
+When remote workers or GitHub Actions need to report into Puter, expose the API through a public
+HTTPS URL and keep `PUTER_API_TOKEN` enabled. Terminate TLS at the ingress, load balancer, or reverse
+proxy, forward to the private Puter listener, and give workers only the HTTPS `PUTER_API_URL` plus the
+bearer token.
+
 ## AWS
 
 Terraform examples live in:

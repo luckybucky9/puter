@@ -58,6 +58,7 @@ POST /v1/issues/:id/claim
 POST /v1/issues/:id/discover
 POST /v1/issues/:id/conflict
 POST /v1/issues/:id/handoff
+POST /v1/issues/:id/report
 POST /v1/issues/:id/close
 GET  /v1/issues/:id/context
 POST /v1/projects/:project/refresh

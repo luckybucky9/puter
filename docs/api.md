@@ -90,6 +90,26 @@ POST /v1/issues/PUT-123/handoff
 
 Updates the workpad and moves the issue to the configured review state.
 
+## Report
+
+```http
+POST /v1/issues/PUT-123/report
+```
+
+```json
+{
+  "status": "failed",
+  "exitCode": 1,
+  "command": "pnpm test",
+  "validation": "Command exited 1: pnpm test",
+  "notes": "CI failed before handoff."
+}
+```
+
+Appends a `### Report` block to the Puter Workpad without moving the Linear issue. Use this for
+worker startup, failure, or blocked-state notes that should stay visible while the issue remains
+claimed.
+
 ## Close
 
 ```http

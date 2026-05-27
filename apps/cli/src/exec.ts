@@ -85,10 +85,21 @@ export async function runExec(args: Args, command: string[]): Promise<void> {
 
   if (claimed && booleanArg(args, "handoff-on-exit") && activeIssueId && exitCode === 0) {
     await post(`/v1/issues/${encodeURIComponent(activeIssueId)}/handoff`, {
-      validation: `Command exited 0: ${command.join(" ")}`,
-      notes: "Recorded automatically by puter exec --handoff-on-exit."
+      pr: stringArg(args, "handoff-pr"),
+      artifact: stringArg(args, "handoff-artifact"),
+      validation: stringArg(args, "handoff-validation") ?? `Command exited 0: ${command.join(" ")}`,
+      notes: stringArg(args, "handoff-notes") ?? "Recorded automatically by puter exec --handoff-on-exit."
     });
   } else if (claimed && booleanArg(args, "handoff-on-exit") && exitCode !== 0) {
+    if (activeIssueId) {
+      await post(`/v1/issues/${encodeURIComponent(activeIssueId)}/report`, {
+        status: "failed",
+        exitCode,
+        command: command.join(" "),
+        validation: `Command exited ${exitCode}: ${command.join(" ")}`,
+        notes: "Recorded automatically by puter exec --handoff-on-exit; leaving issue claimed for follow-up instead of handoff."
+      });
+    }
     process.stderr.write(`puter: child exited ${exitCode}; leaving ${activeIssueId ?? "issue"} claimed for follow-up instead of handoff.\n`);
   }
 
