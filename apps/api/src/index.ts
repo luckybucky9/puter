@@ -3,6 +3,7 @@ import http from "node:http";
 import {
   activeStateNames,
   appendHandoffToWorkpad,
+  appendReportToWorkpad,
   loadConfig,
   overlappingAreas,
   parseWorkpad,
@@ -14,6 +15,7 @@ import {
   type CloseRequest,
   type ConflictMatch,
   type DiscoverRequest,
+  type ExecutionReportRequest,
   type HandoffRequest,
   type PuterConfig,
   type WorkIntent
@@ -67,6 +69,11 @@ async function handleRequest(req: http.IncomingMessage, res: http.ServerResponse
   const handoffMatch = url.pathname.match(/^\/v1\/issues\/([^/]+)\/handoff$/);
   if (req.method === "POST" && handoffMatch) {
     return writeJson(res, 200, await handoff({ ...(await readJson<Omit<HandoffRequest, "issueId">>(req)), issueId: decodeURIComponent(handoffMatch[1] ?? "") }));
+  }
+
+  const reportMatch = url.pathname.match(/^\/v1\/issues\/([^/]+)\/report$/);
+  if (req.method === "POST" && reportMatch) {
+    return writeJson(res, 200, await report({ ...(await readJson<Omit<ExecutionReportRequest, "issueId">>(req)), issueId: decodeURIComponent(reportMatch[1] ?? "") }));
   }
 
   const closeMatch = url.pathname.match(/^\/v1\/issues\/([^/]+)\/close$/);
@@ -198,6 +205,24 @@ async function handoff(request: HandoffRequest): Promise<Record<string, unknown>
   const review = await linear.resolveState(team, projectStates(project).review);
   const updated = await linear.updateIssue({ id: issue.id, stateId: review.id });
   return { issue: updated };
+}
+
+async function report(request: ExecutionReportRequest): Promise<Record<string, unknown>> {
+  const linear = new LinearClient();
+  const issue = await linear.getIssue(request.issueId);
+  const workpad = findWorkpad(issue.comments?.nodes ?? []);
+  const normalized = { ...request, status: request.status ?? "note" };
+
+  if (workpad) {
+    const updated = await linear.updateComment(workpad.id, appendReportToWorkpad(workpad.body, normalized));
+    return { issue, workpad: updated };
+  }
+
+  const created = await linear.createComment(
+    issue.id,
+    appendReportToWorkpad(renderClaimWorkpad({ issueId: request.issueId, surface: "other" }), normalized)
+  );
+  return { issue, workpad: created };
 }
 
 async function close(request: CloseRequest): Promise<Record<string, unknown>> {

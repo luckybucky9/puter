@@ -17,7 +17,11 @@ Symphony runs Codex inside per-issue workspaces
 Add this to Symphony project prompts:
 
 ```md
-Before editing, claim the issue through Puter. If Puter returns a conflict, do not edit; follow the integration issue.
+Before editing, claim the issue through Puter:
+
+puter claim {{ issue.identifier }} --project puter --surface symphony --branch agent/{{ issue.identifier }}-short-title --area <area>
+
+If Puter returns a conflict, do not edit. Follow the returned integration issue.
 ```
 
 The repeatable pathway is:
@@ -32,6 +36,29 @@ The repeatable pathway is:
 8. Handoff returns to Puter/Linear with PR, artifact, validation, and blockers.
 
 Do not treat Symphony refresh as the queue. Linear is the queue; Puter owns claim safety.
+
+## Dispatch Contract
+
+For Puter-backed projects, configure Symphony to treat states this way:
+
+- `Todo`: dispatch queue. Symphony may start work only from this state.
+- `In Progress`, `Blocked`, `In Review`: observation states. Symphony may refresh existing runtime
+  context for work it already owns, but it must not dispatch fresh work from these states.
+- Terminal states such as `Done`, `Canceled`, and `Duplicate`: cleanup/release only.
+
+Before dispatching a `Todo` issue, Symphony should refresh the issue and inspect comments for an
+active Puter Workpad:
+
+```md
+## Puter Workpad
+<!-- puter:workpad v1 issue=LUC-123 claim=... -->
+Surface: codex
+```
+
+If the workpad surface is present and is not `symphony`, Symphony should skip the issue and log a
+clear reason. This keeps direct Codex, terminal, EC2, and GitHub Actions work from being duplicated by
+the orchestrator. If there is no Puter Workpad, Symphony may dispatch the issue, but the first agent
+step must claim through Puter before code edits.
 
 ## Refresh
 

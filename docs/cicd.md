@@ -12,6 +12,8 @@ CI/CD should prove Puter is safe to run before publishing an image.
 - Build Docker image as a smoke test.
 - Render Helm chart.
 - Format/validate Terraform examples where provider setup is available.
+- For Puter-managed runs, wrap validation with `.github/actions/puter-exec` so GitHub Actions claims
+  the Linear issue before validation and records handoff or failure in the Puter Workpad.
 
 ## Main Branch
 
